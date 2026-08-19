@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Therapist Clinical Portal | Serenity Haven{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        
+        <!-- Therapist Header Profile Card -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-circle-lg" style="background-color: {{ profile.avatar_color }};">
+                        {{ profile.get_initials }}
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h3 class="fw-bold text-dark mb-0">{{ profile.get_display_name }}</h3>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active Counselor</span>
+                        </div>
+                        <p class="text-teal fw-medium mb-1">{{ profile.title }}</p>
+                        <small class="text-muted"><i class="bi bi-tag me-1"></i>{{ profile.specialization }}</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 text-center">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="h4 fw-bold text-dark mb-0">{{ upcoming_sessions.count }}</div>
+                        <small class="text-muted">Upcoming</small>
+                    </div>
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="h4 fw-bold text-dark mb-0">{{ clients_count }}</div>
+                        <small class="text-muted">Clients</small>
+                    </div>
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="h4 fw-bold text-dark mb-0">{{ total_sessions }}</div>
+                        <small class="text-muted">Total Sessions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left: Upcoming Appointments Roster -->
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-calendar-week text-teal me-2"></i>Upcoming Clinical Schedule ({{ upcoming_sessions.count }})
+                    </h5>
+
+                    {% if upcoming_sessions %}
+                        <div class="d-grid gap-3">
+                            {% for session in upcoming_sessions %}
+                            <div class="p-3 rounded-3 border bg-light">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0">{{ session.offer.name }}</h6>
+                                        <span class="small text-muted">
+                                            Client: <strong>{{ session.client.get_full_name|default:session.client.username }}</strong> ({{ session.client.email }})
+                                        </span>
+                                    </div>
+                                    <span class="status-badge status-{{ session.status }}">{{ session.get_status_display }}</span>
+                                </div>
+
+                                <div class="row g-2 small text-secondary mb-3">
+                                    <div class="col-sm-6">
+                                        <i class="bi bi-clock text-teal me-1"></i>
+                                        <strong>{{ session.start_time|date:"l, M j, Y" }}</strong> @ {{ session.start_time|date:"g:i A" }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <i class="bi bi-hourglass-split text-teal me-1"></i>
+                                        Duration: {{ session.offer.get_formatted_duration }}
+                                    </div>
+                                </div>
+
+                                {% if session.client_notes %}
+                                <div class="p-2 rounded bg-white border small mb-3 text-secondary">
+                                    <strong>Client Focus Notes:</strong> "{{ session.client_notes }}"
+                                </div>
+                                {% endif %}
+
+                                <!-- Status Modifier Actions -->
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-2 border-top">
+                                    <div class="small text-muted">Update Status:</div>
+                                    <form method="post" action="{% url 'bookings:update_status' session.id %}" class="d-flex gap-2">
+                                        {% csrf_token %}
+                                        {% if session.status != 'confirmed' %}
+                                            <button type="submit" name="status" value="confirmed" class="btn btn-sm btn-outline-success">Confirm</button>
+                                        {% endif %}
+                                        <button type="submit" name="status" value="completed" class="btn btn-sm btn-serenity">Mark Completed</button>
+                                        <button type="submit" name="status" value="cancelled" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this appointment?')">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar2-check text-muted display-4 d-block mb-2"></i>
+                            <p class="text-muted mb-0">No upcoming client appointments scheduled right now.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Past Completed Sessions -->
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-clock-history text-muted me-2"></i>Recent Completed / Past Logs
+                    </h5>
+                    {% if past_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in past_sessions %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">{{ s.client.get_full_name|default:s.client.username }}</td>
+                                    <td>{{ s.offer.name }}</td>
+                                    <td>{{ s.start_time|date:"M j, Y @ g:i A" }}</td>
+                                    <td><span class="status-badge status-{{ s.status }}">{{ s.get_status_display }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-muted small mb-0">No past session records.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right: Weekly Schedule & Availability Settings -->
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-clock-fill text-teal me-1"></i> Your Weekly Availability</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-2 small">
+                        {% for day, hours in profile.availability.items %}
+                        <li class="p-2 rounded bg-light d-flex justify-content-between">
+                            <span class="text-capitalize fw-semibold text-dark">{{ day }}</span>
+                            <span class="text-teal fw-semibold">{{ hours }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-muted">Monday - Friday: 9:00 AM - 5:00 PM</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="dashboard-card bg-cream-light border-0">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-shield-lock text-teal me-1"></i> Clinical Privacy & Security</h6>
+                    <p class="small text-muted mb-0">All client session notes and scheduling information are strictly confidential and encrypted under standard HIPAA compliance protocols.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

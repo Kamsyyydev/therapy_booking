@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ offer.name }} | Serenity Haven{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{% url 'offers:home' %}" class="text-teal text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'offers:home' %}?category={{ offer.category }}" class="text-teal text-decoration-none">{{ offer.get_category_display }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ offer.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5">
+            <!-- Main Offer Info Column -->
+            <div class="col-lg-8">
+                <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-4">
+                    <!-- Top Category & Badges -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="offer-category-badge">{{ offer.get_category_display }}</span>
+                        {% if offer.is_student_offer %}
+                            <span class="badge badge-custom badge-student"><i class="bi bi-mortarboard me-1"></i>.EDU Student Special</span>
+                        {% endif %}
+                        {% if offer.badge %}
+                            <span class="badge badge-custom badge-popular">{{ offer.badge }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Title & Tagline -->
+                    <h1 class="fw-bold text-dark mb-3">{{ offer.name }}</h1>
+                    {% if offer.tagline %}
+                        <p class="lead text-teal fw-medium mb-4">{{ offer.tagline }}</p>
+                    {% endif %}
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <!-- Description -->
+                    <h5 class="fw-bold text-dark mb-3">About This Offering</h5>
+                    <p class="text-secondary mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+                        {{ offer.description }}
+                    </p>
+
+                    <!-- What is Included List -->
+                    {% if offer.get_features_list %}
+                    <div class="p-4 rounded-3 bg-light border mb-4">
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-check2-circle text-teal me-2"></i>What's Included</h6>
+                        <ul class="list-unstyled mb-0 d-grid gap-2 text-secondary">
+                            {% for feat in offer.get_features_list %}
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-check-lg text-teal fw-bold mt-1"></i>
+                                    <span>{{ feat }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Session & Format Details -->
+                    <div class="row g-3 py-3 border-top border-bottom mb-4">
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">Duration</small>
+                            <strong class="text-dark"><i class="bi bi-clock me-1 text-teal"></i>{{ offer.get_formatted_duration }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">Sessions Included</small>
+                            <strong class="text-dark"><i class="bi bi-calendar-event me-1 text-teal"></i>{{ offer.sessions_included }} session{{ offer.sessions_included|pluralize }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">Format</small>
+                            <strong class="text-dark"><i class="bi bi-person-video me-1 text-teal"></i>{{ offer.get_offer_type_display }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Available Therapists -->
+                    <h5 class="fw-bold text-dark mb-3">Available Specialists for this Offering</h5>
+                    <div class="row g-3">
+                        {% for therapist in therapists %}
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between bg-cream-light">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if therapist.get_photo_url %}
+                                        <img src="{{ therapist.get_photo_url }}" alt="{{ therapist.get_display_name }}" class="avatar-circle object-fit-cover shadow-sm" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #5B9EA7;">
+                                    {% else %}
+                                        <div class="avatar-circle" style="background-color: {{ therapist.avatar_color }};">
+                                            {{ therapist.get_initials }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ therapist.get_display_name }}</h6>
+                                        <small class="text-muted">{{ therapist.title|truncatechars:30 }}</small>
+                                    </div>
+                                </div>
+                                <a href="{% url 'bookings:book_offer' offer.slug %}?therapist={{ therapist.user.id }}" class="btn btn-sm btn-outline-secondary">Select</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sticky Booking Card Column -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; background-color: #FFFFFF; border: 1px solid var(--card-border) !important;">
+                    <div class="mb-3">
+                        <span class="text-muted small">Session Investment</span>
+                        <div class="d-flex align-items-baseline gap-2">
+                            <span class="display-6 fw-bold text-dark">{{ offer.get_display_price }}</span>
+                            {% if offer.discounted_price %}
+                                <span class="text-muted text-decoration-line-through">{{ offer.get_display_discounted_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if offer.is_student_offer %}
+                    <div class="alert alert-warning small p-2 mb-3 border-0 bg-warning-subtle text-dark">
+                        <i class="bi bi-info-circle-fill me-1"></i> Requires verified <strong>.edu.ng / .edu</strong> email address.
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{% url 'bookings:book_offer' offer.slug %}" class="btn btn-serenity btn-lg shadow-sm">
+                            <i class="bi bi-calendar2-plus me-1"></i> Book This Offering
+                        </a>
+                    </div>
+
+                    <ul class="list-unstyled small text-muted mb-0 d-grid gap-2">
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-check text-success"></i> 100% Confidential & Secure
+                        </li>
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-repeat text-teal"></i> Flexible rescheduling (24h notice)
+                        </li>
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-credit-card text-teal"></i> Pay at checkout or upon session
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Offers in same category -->
+        {% if related_offers %}
+        <div class="mt-5 pt-4 border-top">
+            <h4 class="fw-bold text-dark mb-4">Related in {{ offer.get_category_display }}</h4>
+            <div class="row g-4">
+                {% for rel in related_offers %}
+                <div class="col-md-4">
+                    <div class="offer-card">
+                        <div class="offer-card-body">
+                            <h5 class="offer-title">{{ rel.name }}</h5>
+                            <p class="offer-tagline">{{ rel.tagline|default:rel.description|truncatewords:12 }}</p>
+                            <div class="offer-price-box">
+                                <span class="price-main">{{ rel.get_display_price }}</span>
+                                <span class="duration-chip"><i class="bi bi-clock"></i> {{ rel.get_formatted_duration }}</span>
+                            </div>
+                            <a href="{% url 'offers:offer_detail' rel.slug %}" class="btn btn-sm btn-serenity-outline mt-3">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

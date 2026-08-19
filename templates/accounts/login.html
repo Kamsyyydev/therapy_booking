@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In | Serenity Haven Nigeria{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container" style="max-width: 480px;">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+            <div class="text-center mb-4">
+                <div class="brand-icon mx-auto mb-3" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #5B9EA7, #467E86); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">Welcome Back</h3>
+                <p class="text-muted small">Sign in to your client or therapist account</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-dark">Username</label>
+                    <input type="text" name="username" class="form-control" required autofocus placeholder="Enter your username">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-dark">Password</label>
+                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-serenity btn-lg">Sign In</button>
+                </div>
+            </form>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            <div class="text-center small text-muted">
+                Don't have an account yet? <a href="{% url 'accounts:register' %}" class="text-teal fw-bold">Sign up here</a>
+            </div>
+
+            <!-- Demo Credentials Helper Box -->
+            <div class="mt-4 p-3 bg-light rounded-3 border small">
+                <strong class="d-block text-dark mb-2"><i class="bi bi-key text-teal me-1"></i> Quick Demo Accounts (Nigeria):</strong>
+                <ul class="list-unstyled mb-0 d-grid gap-2 text-muted" style="font-size: 0.82rem;">
+                    <li><strong>Therapist (Mrs. Angel):</strong> <code>mrs_angel</code> / <code>Therapy123!</code></li>
+                    <li><strong>Therapist (Mrs. Munalima):</strong> <code>mrs_munalima</code> / <code>Therapy123!</code></li>
+                    <li><strong>Verified Student:</strong> <code>chioma_student</code> / <code>Student123!</code> (FUTO Owerri)</li>
+                    <li><strong>Client:</strong> <code>emeka_client</code> / <code>Client123!</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

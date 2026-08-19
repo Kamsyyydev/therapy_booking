@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ offer.name }} | Serenity Haven{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container" style="max-width: 840px;">
+        <!-- Back Link -->
+        <a href="{% url 'offers:offer_detail' offer.slug %}" class="btn btn-link text-decoration-none text-muted mb-4 ps-0">
+            <i class="bi bi-arrow-left me-1"></i> Back to offer details
+        </a>
+
+        <div class="bg-white rounded-4 border shadow-sm p-4 p-md-5">
+            <!-- Header Summary -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-4 mb-4 border-bottom">
+                <div>
+                    <span class="offer-category-badge">{{ offer.get_category_display }}</span>
+                    <h2 class="fw-bold text-dark mt-2 mb-1">Book: {{ offer.name }}</h2>
+                    <p class="text-muted small mb-0">{{ offer.tagline|default:offer.description|truncatewords:14 }}</p>
+                </div>
+                <div class="text-md-end">
+                    <span class="display-6 fw-bold text-dark">{{ offer.get_display_price }}</span>
+                    <div class="small text-muted"><i class="bi bi-clock me-1 text-teal"></i>{{ offer.get_formatted_duration }}</div>
+                </div>
+            </div>
+
+            {% if offer.is_student_offer %}
+                {% if not is_verified_student %}
+                <div class="alert alert-warning border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+                    <div>
+                        <strong>Student Email Verification Required</strong>
+                        <div class="small">This discount requires an active <code>.edu</code> email verification on your account.</div>
+                    </div>
+                    <a href="{% url 'accounts:verify_student' %}?next={% url 'bookings:book_offer' offer.slug %}" class="btn btn-sm btn-dark ms-auto">Verify Now</a>
+                </div>
+                {% else %}
+                <div class="alert alert-success border-0 rounded-3 mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span class="small"><strong>.EDU Student Discount Applied!</strong> Your student verification is active.</span>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Booking Form -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark"><i class="bi bi-person-badge text-teal me-1"></i> Choose Your Therapist / Counselor</label>
+                    {{ form.therapist }}
+                    <small class="text-muted d-block mt-1">Leave blank to auto-match with the next available specialist.</small>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark"><i class="bi bi-calendar-event text-teal me-1"></i> Preferred Date</label>
+                        {{ form.start_date }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark"><i class="bi bi-clock text-teal me-1"></i> Preferred Time Slot</label>
+                        {{ form.start_time_slot }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark"><i class="bi bi-journal-text text-teal me-1"></i> Session Focus & Notes (Optional)</label>
+                    {{ form.client_notes }}
+                    <small class="text-muted d-block mt-1">Feel free to share what you'd like to address or any scheduling preferences.</small>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="d-flex align-items-center gap-2 small text-secondary">
+                        <i class="bi bi-info-circle-fill text-teal"></i>
+                        <span>No upfront credit card required today. Your appointment will be confirmed immediately.</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-serenity btn-lg">
+                        <i class="bi bi-check2-circle me-1"></i> Confirm & Book Session
+                    </button>
+                    <a href="{% url 'offers:home' %}" class="btn btn-link text-muted">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

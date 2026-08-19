@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Serenity Haven | Modern Therapy & Wellness Booking Nigeria{% endblock %}</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="serenity-nav sticky-top">
+        <div class="container py-2">
+            <nav class="navbar navbar-expand-lg navbar-light p-0">
+                <a class="navbar-brand brand-logo" href="{% url 'offers:home' %}">
+                    <span class="brand-icon"><i class="bi bi-flower1"></i></span>
+                    Serenity<span>Haven</span>
+                </a>
+                
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold px-3 text-secondary" href="{% url 'offers:home' %}">Explore Offers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold px-3 text-secondary" href="{% url 'offers:home' %}?category=student">
+                                <span class="badge badge-custom badge-student me-1">EDU</span> Student Rates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold px-3 text-secondary" href="{% url 'offers:home' %}?category=packages">Packages & Save</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        {% if user.is_authenticated %}
+                            {% if is_student_verified %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill d-none d-md-inline-block">
+                                    <i class="bi bi-check-circle-fill"></i> Student Verified
+                                </span>
+                            {% elif not is_therapist %}
+                                <a href="{% url 'accounts:verify_student' %}" class="btn btn-sm btn-outline-primary rounded-pill d-none d-md-inline-block">
+                                    <i class="bi bi-mortarboard"></i> Verify Student (.edu / .edu.ng)
+                                </a>
+                            {% endif %}
+
+                            {% if is_therapist %}
+                                <a href="{% url 'bookings:therapist_dashboard' %}" class="btn btn-serenity-navy btn-sm">
+                                    <i class="bi bi-calendar2-check me-1"></i> Clinical Portal
+                                </a>
+                            {% else %}
+                                <a href="{% url 'bookings:client_dashboard' %}" class="btn btn-serenity btn-sm">
+                                    <i class="bi bi-person-check me-1"></i> My Bookings
+                                </a>
+                            {% endif %}
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle border rounded-pill px-3 py-1 text-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle me-1"></i> {{ user.first_name|default:user.username }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li><h6 class="dropdown-header">Signed in as <strong>{{ user.username }}</strong></h6></li>
+                                    {% if is_therapist %}
+                                        <li><a class="dropdown-item" href="{% url 'bookings:therapist_dashboard' %}"><i class="bi bi-grid me-2"></i>My Schedule</a></li>
+                                    {% else %}
+                                        <li><a class="dropdown-item" href="{% url 'bookings:client_dashboard' %}"><i class="bi bi-journal-text me-2"></i>My Appointments</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'accounts:verify_student' %}"><i class="bi bi-mortarboard me-2"></i>Student Verification</a></li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" action="{% url 'accounts:logout' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Log Out</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}" class="btn btn-serenity-outline btn-sm">Log In</a>
+                            <a href="{% url 'accounts:register' %}" class="btn btn-serenity btn-sm">Get Started</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Global Toast / Django Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Calming Footer with Nigerian Hotlines & Details -->
+    <footer class="serenity-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                        <span class="text-teal"><i class="bi bi-flower1"></i></span> Serenity Haven Nigeria
+                    </h5>
+                    <p class="text-white-50 small mb-3">
+                        A safe, culturally sensitive mental health sanctuary led by Mrs. Angel and Mrs. Munalima. Offering individual therapy, trauma-informed somatics, student access rates, and dedicated counselor support.
+                    </p>
+                    <div class="small text-white-50 mb-2">
+                        <i class="bi bi-geo-alt-fill text-teal me-1"></i> FUTO Road, Obinze, Owerri, Imo State, Nigeria
+                    </div>
+                    <div class="small text-white-50 mb-2">
+                        <i class="bi bi-telephone-fill text-teal me-1"></i> +234 916 645 8597 / 09166458597
+                    </div>
+                    <div class="d-flex gap-3 text-white-50 mt-2">
+                        <i class="bi bi-shield-check text-teal"></i> <span class="small">Strict Clinical Confidentiality</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Offerings</h6>
+                    <ul class="list-unstyled small mb-0 d-grid gap-2">
+                        <li><a href="{% url 'offers:home' %}?category=core">Core Sessions</a></li>
+                        <li><a href="{% url 'offers:home' %}?category=packages">Packages & Bundles</a></li>
+                        <li><a href="{% url 'offers:home' %}?category=student">Student Discounts</a></li>
+                        <li><a href="{% url 'offers:home' %}?category=mental_health">Wellness Programs</a></li>
+                        <li><a href="{% url 'offers:home' %}?category=memberships">Memberships</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Client Portal</h6>
+                    <ul class="list-unstyled small mb-0 d-grid gap-2">
+                        <li><a href="{% url 'accounts:login' %}">Client Sign In</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Create New Account</a></li>
+                        <li><a href="{% url 'accounts:verify_student' %}">.EDU / .EDU.NG Verification</a></li>
+                        <li><a href="{% url 'bookings:client_dashboard' %}">Manage Sessions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Nigerian Mental Health Hotlines & Direct Line -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Crisis & Helpline Numbers</h6>
+                    <div class="bg-dark p-3 rounded small text-white-50 border border-secondary border-opacity-25">
+                        <p class="mb-1 text-white fw-semibold"><i class="bi bi-telephone-fill text-warning me-1"></i> Direct Line / Helpline:</p>
+                        <p class="mb-2 text-info fw-bold" style="font-size: 1.05rem;">09166458597</p>
+                        
+                        <p class="mb-1 text-white fw-semibold"><i class="bi bi-whatsapp text-success me-1"></i> WhatsApp Support:</p>
+                        <p class="mb-2 text-info small">09166458597</p>
+
+                        <p class="mb-0 text-white-50" style="font-size: 0.75rem;">Direct 24/7 client booking, counselor assistance & mental health care support.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary my-4 opacity-25">
+            
+            <div class="d-flex flex-wrap justify-content-between align-items-center small text-white-50">
+                <div>&copy; 2026 Serenity Haven Wellness Center. All rights reserved.</div>
+                <div>FUTO Road, Obinze, Owerri • Designed with mindful clarity & empathy.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

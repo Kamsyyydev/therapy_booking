@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Serenity Haven | Therapy, Counseling & Mental Wellness{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-banner">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="hero-pill">
+                    <i class="bi bi-shield-check"></i> Licensed Therapists & Compassionate Care
+                </div>
+                <h1 class="display-4 hero-title mb-3">
+                    A calm, personalized space for your mental wellness.
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Explore 25 thoughtfully designed therapy options—from core individual sessions and flexible package bundles to student access rates and somatic deep dives.
+                </p>
+                
+                <!-- Search and Quick Filter Form -->
+                <form method="get" action="{% url 'offers:home' %}" class="row g-2 mb-3">
+                    {% if active_category and active_category != 'all' %}
+                        <input type="hidden" name="category" value="{{ active_category }}">
+                    {% endif %}
+                    <div class="col-md-8">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search sessions (e.g. Somatic, Student, Assessment, EMDR)...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-serenity btn-lg w-100 shadow-sm">Find Therapy</button>
+                    </div>
+                </form>
+
+                <div class="d-flex flex-wrap gap-3 align-items-center text-secondary small">
+                    <span class="fw-semibold text-dark"><i class="bi bi-check-circle-fill text-success me-1"></i> Transparent Pricing</span>
+                    <span>•</span>
+                    <span class="fw-semibold text-dark"><i class="bi bi-mortarboard-fill text-primary me-1"></i> Student Discounts</span>
+                    <span>•</span>
+                    <span class="fw-semibold text-dark"><i class="bi bi-laptop me-1 text-info"></i> In-Person & Telehealth</span>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="bg-white p-4 rounded-4 shadow-sm border">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-circle" style="background-color: #5B9EA7;"><i class="bi bi-heart-pulse"></i></div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Personalized Care Path</h6>
+                            <small class="text-muted">Over 25 dedicated modalities</small>
+                        </div>
+                    </div>
+                    <ul class="list-unstyled mb-0 d-grid gap-2 small">
+                        <li class="p-2 rounded bg-light d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person text-teal me-2"></i> 1:1 Individual & Couples</span>
+                            <strong class="text-dark">From ₦15,000</strong>
+                        </li>
+                        <li class="p-2 rounded bg-light d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-box-seam text-success me-2"></i> Multi-Session Bundles</span>
+                            <span class="badge bg-success">Save up to 25%</span>
+                        </li>
+                        <li class="p-2 rounded bg-light d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-mortarboard text-primary me-2"></i> Student Rates (FUTO/IMSU)</span>
+                            <strong class="text-dark">₦1,500 - ₦5,000</strong>
+                        </li>
+                        <li class="p-2 rounded bg-light d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-tree text-teal me-2"></i> Somatic & Walk & Talk</span>
+                            <strong class="text-dark">Specialized</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offers Catalog Section -->
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Category Pill Navigation Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Explore Available Offers</h3>
+                <p class="text-muted mb-0 small">Select a category below or browse our complete collection of care options.</p>
+            </div>
+            
+            {% if search_query %}
+            <div>
+                <a href="{% url 'offers:home' %}" class="btn btn-sm btn-outline-secondary rounded-pill">
+                    <i class="bi bi-x-circle me-1"></i> Clear Search ("{{ search_query }}")
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="category-filter-nav mb-4 pb-2">
+            <a href="{% url 'offers:home' %}" class="category-filter-btn {% if not active_category or active_category == 'all' %}active{% endif %}">
+                <i class="bi bi-grid-fill"></i> All Offers <span class="cat-badge">{{ total_offers }}</span>
+            </a>
+            {% for cat in categories %}
+                <a href="{% url 'offers:home' %}?category={{ cat.key }}" class="category-filter-btn {% if active_category == cat.key %}active{% endif %}">
+                    <i class="bi {{ cat.icon }}"></i> {{ cat.name }} <span class="cat-badge">{{ cat.count }}</span>
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Offers Grid -->
+        <div class="row g-4">
+            {% for offer in offers %}
+            <div class="col-lg-4 col-md-6">
+                <div class="offer-card">
+                    {% if offer.image %}
+                    <img src="{{ offer.image.url }}" class="card-img-top object-fit-cover" alt="{{ offer.name }}" style="height: 180px;">
+                    {% endif %}
+                    <div class="offer-card-body">
+                        <!-- Top Meta / Badges -->
+                        <div class="card-top-meta">
+                            <span class="offer-category-badge">{{ offer.get_category_display }}</span>
+                            <div>
+                                {% if offer.is_student_offer %}
+                                    <span class="badge badge-custom badge-student"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                                {% endif %}
+                                {% if offer.badge %}
+                                    <span class="badge badge-custom badge-popular">{{ offer.badge }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Title & Tagline -->
+                        <h4 class="offer-title">{{ offer.name }}</h4>
+                        <p class="offer-tagline">{{ offer.tagline|default:offer.description|truncatewords:16 }}</p>
+
+                        <!-- Key Features Checklist -->
+                        <ul class="card-features-list">
+                            {% for feat in offer.get_features_list|slice:":3" %}
+                                <li>{{ feat }}</li>
+                            {% empty %}
+                                <li>{{ offer.get_offer_type_display }}</li>
+                                <li>Compassionate licensed care</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Pricing & Duration Meta -->
+                        <div class="offer-price-box">
+                            <div>
+                                <span class="price-main">{{ offer.get_display_price }}</span>
+                                {% if offer.discounted_price %}
+                                    <span class="price-original text-decoration-line-through text-muted small ms-1">{{ offer.get_display_discounted_price }}</span>
+                                {% endif %}
+                            </div>
+                            <span class="duration-chip">
+                                <i class="bi bi-clock"></i> {{ offer.get_formatted_duration }}
+                            </span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="{% url 'offers:offer_detail' offer.slug %}" class="btn btn-serenity">
+                                View Details & Book
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 py-5 text-center">
+                <div class="p-5 bg-white rounded-4 border shadow-sm mx-auto" style="max-width: 500px;">
+                    <i class="bi bi-search display-3 text-muted mb-3 d-block"></i>
+                    <h5 class="fw-bold text-dark">No therapy offers matched your search</h5>
+                    <p class="text-muted small">Try searching for different keywords or clear the category filters.</p>
+                    <a href="{% url 'offers:home' %}" class="btn btn-serenity btn-sm">Reset Catalog</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Our Licensed Therapists Section -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge bg-light text-teal border px-3 py-2 rounded-pill fw-bold text-uppercase">Clinical Leadership</span>
+            <h2 class="fw-bold text-dark mt-2">Meet Our Lead Practitioners</h2>
+            <p class="text-muted">Mrs. Angel and Mrs. Munalima bring dedicated, culturally grounded clinical frameworks to empower your emotional wellness journey in Owerri and beyond.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% for therapist in featured_therapists %}
+            <div class="col-lg-5 col-md-6">
+                <div class="p-4 rounded-4 border h-100 bg-cream-light d-flex flex-column shadow-sm">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {% if therapist.get_photo_url %}
+                            <img src="{{ therapist.get_photo_url }}" alt="{{ therapist.get_display_name }}" class="avatar-circle-lg object-fit-cover shadow-sm" style="width: 72px; height: 72px; border-radius: 50%; border: 3px solid #5B9EA7;">
+                        {% else %}
+                            <div class="avatar-circle-lg" style="background-color: {{ therapist.avatar_color }};">
+                                {{ therapist.get_initials }}
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0">{{ therapist.get_display_name }}</h5>
+                            <small class="text-teal fw-semibold">{{ therapist.title }}</small>
+                        </div>
+                    </div>
+                    <p class="small text-secondary mb-3">{{ therapist.bio }}</p>
+                    <div class="mt-auto">
+                        <div class="small fw-semibold text-dark mb-1">Focus Areas:</div>
+                        <p class="small text-muted mb-3">{{ therapist.specialization }}</p>
+                        <a href="{% url 'offers:home' %}" class="btn btn-sm btn-serenity-outline w-100">
+                            Book Session with {{ therapist.user.first_name }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,411 @@
+/* Serenity Haven Therapy & Wellness Styling */
+:root {
+  --primary-teal: #5B9EA7;
+  --teal-dark: #3F7A82;
+  --teal-light: #E4F1F2;
+  --teal-subtle: #EDF6F7;
+  --bg-cream: #FAF3E0;
+  --cream-light: #FDFBF7;
+  --navy-dark: #2C3E50;
+  --navy-muted: #536B82;
+  --navy-light: #1A252F;
+  --accent-gold: #D4A373;
+  --text-main: #2C3E50;
+  --text-muted: #6C7A89;
+  --card-border: #E8ECEF;
+  --shadow-soft: 0 10px 30px rgba(44, 62, 80, 0.06);
+  --shadow-hover: 0 16px 36px rgba(91, 158, 167, 0.16);
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--cream-light);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Custom Navbar */
+.serenity-nav {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid rgba(91, 158, 167, 0.15);
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.03);
+}
+
+.brand-logo {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--navy-dark) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-logo .brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-teal), #467E86);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.brand-logo span {
+  color: var(--primary-teal);
+}
+
+/* Hero Section */
+.hero-banner {
+  background: linear-gradient(135deg, var(--bg-cream) 0%, #FFFFFF 100%);
+  border-bottom: 1px solid rgba(91, 158, 167, 0.12);
+  padding: 4rem 0 3.5rem;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--teal-light);
+  color: var(--teal-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+}
+
+.hero-title {
+  color: var(--navy-dark);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Category Navigation Pills */
+.category-filter-nav {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.category-filter-btn {
+  white-space: nowrap;
+  border-radius: 50px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy-dark);
+  background-color: #FFFFFF;
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.category-filter-btn:hover,
+.category-filter-btn.active {
+  background-color: var(--primary-teal);
+  color: #FFFFFF;
+  border-color: var(--primary-teal);
+  box-shadow: 0 4px 12px rgba(91, 158, 167, 0.25);
+}
+
+.category-filter-btn .cat-badge {
+  background-color: rgba(0, 0, 0, 0.08);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+}
+
+.category-filter-btn.active .cat-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* Offer Cards */
+.offer-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.offer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(91, 158, 167, 0.4);
+}
+
+.offer-card-body {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-top-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.offer-category-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teal-dark);
+  background-color: var(--teal-light);
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+}
+
+.offer-title {
+  color: var(--navy-dark);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.offer-tagline {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.45;
+}
+
+.offer-price-box {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #F0F4F6;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.price-main {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy-dark);
+}
+
+.price-original {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
+}
+
+.duration-chip {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Feature Checkmarks in Cards */
+.card-features-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--navy-muted);
+}
+
+.card-features-list li {
+  position: relative;
+  padding-left: 1.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.card-features-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--primary-teal);
+  font-weight: bold;
+}
+
+/* Custom Badges */
+.badge-custom {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+}
+
+.badge-student {
+  background-color: #7B68EE;
+  color: #FFFFFF;
+}
+
+.badge-bestseller, .badge-popular {
+  background-color: #E67E22;
+  color: #FFFFFF;
+}
+
+.badge-package, .badge-save {
+  background-color: #27AE60;
+  color: #FFFFFF;
+}
+
+.badge-intensive, .badge-deep-work {
+  background-color: #2C3E50;
+  color: #FFFFFF;
+}
+
+/* Buttons */
+.btn-serenity {
+  background-color: var(--primary-teal);
+  color: #FFFFFF;
+  border: 1px solid var(--primary-teal);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-serenity:hover {
+  background-color: var(--teal-dark);
+  border-color: var(--teal-dark);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(91, 158, 167, 0.3);
+}
+
+.btn-serenity-outline {
+  background-color: transparent;
+  color: var(--primary-teal);
+  border: 1px solid var(--primary-teal);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.btn-serenity-outline:hover {
+  background-color: var(--teal-light);
+  color: var(--teal-dark);
+  border-color: var(--primary-teal);
+}
+
+.btn-serenity-navy {
+  background-color: var(--navy-dark);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.4rem;
+}
+
+.btn-serenity-navy:hover {
+  background-color: #1A252F;
+  color: #FFFFFF;
+}
+
+/* Avatar Circles */
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-size: 1.1rem;
+}
+
+.avatar-circle-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-size: 1.6rem;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-soft);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.status-confirmed {
+  background-color: #E8F8F5;
+  color: #117A65;
+}
+
+.status-pending {
+  background-color: #FEF9E7;
+  color: #B7950B;
+}
+
+.status-completed {
+  background-color: #EAEDED;
+  color: #5D6D7E;
+}
+
+.status-cancelled {
+  background-color: #FDEDEC;
+  color: #C0392B;
+}
+
+/* Footer */
+.serenity-footer {
+  background-color: var(--navy-dark);
+  color: #CFD8DC;
+  border-top: 4px solid var(--primary-teal);
+  padding: 3.5rem 0 2rem;
+  margin-top: 4rem;
+}
+
+.serenity-footer a {
+  color: #ECEFF1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.serenity-footer a:hover {
+  color: var(--primary-teal);
+}

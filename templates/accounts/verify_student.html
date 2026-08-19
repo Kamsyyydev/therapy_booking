@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Discount Verification | Serenity Haven Nigeria{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container" style="max-width: 680px;">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+            
+            <div class="text-center mb-4">
+                <div class="avatar-circle mx-auto mb-3" style="background-color: #7B68EE; width: 64px; height: 64px; font-size: 1.75rem;">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-1">Student Rate Verification</h2>
+                <p class="text-muted">Instant verification for students with Nigerian & international academic email addresses (<code>.edu.ng</code>, <code>.edu</code>, <code>.sch.ng</code>).</p>
+            </div>
+
+            {% if student_verification and student_verification.is_verified %}
+                <div class="p-4 rounded-4 bg-success-subtle border border-success-subtle text-center mb-4">
+                    <i class="bi bi-patch-check-fill text-success display-4 mb-2 d-block"></i>
+                    <h5 class="fw-bold text-success mb-1">Your Student Status is Verified!</h5>
+                    <p class="small text-secondary mb-3">
+                        Verified via <strong>{{ student_verification.edu_email }}</strong> 
+                        {% if student_verification.school_name %}at <em>{{ student_verification.school_name }}</em>{% endif %}.
+                    </p>
+                    <a href="{% url 'offers:home' %}?category=student" class="btn btn-success">
+                        Browse Student Offers
+                    </a>
+                </div>
+            {% else %}
+                <!-- Verification Form -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-stars text-teal me-1"></i> What You Unlock with Mrs. Angel & Mrs. Munalima:</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-1 small text-secondary">
+                        <li><i class="bi bi-check-circle text-teal me-2"></i><strong>Student Single 1:1:</strong> ₦5,000 (Regular ₦15,000)</li>
+                        <li><i class="bi bi-check-circle text-teal me-2"></i><strong>Student 5-Pack:</strong> ₦22,000 (₦4,400/session)</li>
+                        <li><i class="bi bi-check-circle text-teal me-2"></i><strong>"Exam Crunch" 30-min Reset:</strong> ₦3,000</li>
+                        <li><i class="bi bi-check-circle text-teal me-2"></i><strong>Student Group Circles:</strong> ₦1,500/person</li>
+                    </ul>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Your University / College Email (.edu.ng / .edu)</label>
+                        {{ form.edu_email }}
+                        <small class="text-muted d-block mt-1">Accepts <code>.edu.ng</code>, <code>.edu</code>, <code>.sch.ng</code>, or <code>.ac.uk</code> (e.g. <code>student@unilag.edu.ng</code>, <code>student@covenantuniversity.edu.ng</code>).</small>
+                        {% if form.edu_email.errors %}<div class="text-danger small mt-1">{{ form.edu_email.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Institution Name (e.g. FUTO, IMSU, UNILAG, UNN, UI, Covenant)</label>
+                        {{ form.school_name }}
+                        {% if form.school_name.errors %}<div class="text-danger small mt-1">{{ form.school_name.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-serenity btn-lg">
+                            <i class="bi bi-check2-circle me-1"></i> Verify & Unlock Student Rates
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

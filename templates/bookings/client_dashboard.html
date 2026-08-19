@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings & Care Dashboard | Serenity Haven{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        
+        <!-- Dashboard Top Banner -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="badge bg-teal text-white px-3 py-1 rounded-pill mb-2">Client Portal</span>
+                <h2 class="fw-bold text-dark mb-1">Welcome, {{ user.first_name|default:user.username }}</h2>
+                <p class="text-muted small mb-0">Manage your upcoming therapy appointments, access wellness resources, and book new sessions.</p>
+            </div>
+            <div>
+                <a href="{% url 'offers:home' %}" class="btn btn-serenity">
+                    <i class="bi bi-plus-circle me-1"></i> Book New Session
+                </a>
+            </div>
+        </div>
+
+        <!-- Student Verification Banner if unverified -->
+        {% if not is_verified_student %}
+        <div class="p-3 mb-4 rounded-4 bg-white border border-primary border-opacity-25 shadow-sm d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-circle" style="background-color: #7B68EE;"><i class="bi bi-mortarboard"></i></div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">Are you currently a student?</h6>
+                    <small class="text-muted">Verify your <code>.edu</code> email address to unlock discounted sessions from $35.</small>
+                </div>
+            </div>
+            <a href="{% url 'accounts:verify_student' %}" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap">
+                Verify .EDU Status
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="row g-4">
+            <!-- Left: Upcoming & Active Bookings -->
+            <div class="col-lg-8">
+                
+                <!-- Upcoming Sessions Card -->
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-calendar2-check text-teal me-2"></i>Upcoming Sessions ({{ upcoming_bookings.count }})
+                        </h5>
+                    </div>
+
+                    {% if upcoming_bookings %}
+                        <div class="d-grid gap-3">
+                            {% for booking in upcoming_bookings %}
+                            <div class="p-3 rounded-3 border bg-light d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h6 class="fw-bold text-dark mb-0">{{ booking.offer.name }}</h6>
+                                        <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                                    </div>
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-person me-1 text-teal"></i>
+                                        Therapist: <strong>{{ booking.therapist.get_full_name|default:booking.therapist.username|default:"Assigned Practitioner" }}</strong>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="bi bi-clock me-1 text-teal"></i>
+                                        {{ booking.start_time|date:"l, F j, Y @ g:i A"|default:"Flexible / Self-Paced" }}
+                                        ({{ booking.offer.get_formatted_duration }})
+                                    </div>
+                                    {% if booking.meeting_link %}
+                                    <div class="small text-teal mt-1">
+                                        <i class="bi bi-geo-alt me-1"></i> {{ booking.meeting_link }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    {% if booking.status == 'confirmed' or booking.status == 'pending' %}
+                                    <form method="post" action="{% url 'bookings:update_status' booking.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="cancelled">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x text-muted display-4 d-block mb-2"></i>
+                            <p class="text-muted mb-2">You have no upcoming sessions scheduled.</p>
+                            <a href="{% url 'offers:home' %}" class="btn btn-sm btn-serenity">Browse Therapy Offers</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Digital Workbooks & Add-Ons -->
+                {% if digital_bookings %}
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-journal-bookmark text-teal me-2"></i>Digital Resources & Add-Ons
+                    </h5>
+                    <div class="d-grid gap-2">
+                        {% for db in digital_bookings %}
+                        <div class="p-3 rounded-3 border bg-cream-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">{{ db.offer.name }}</h6>
+                                <small class="text-muted">{{ db.offer.tagline|default:"Instant digital access enabled" }}</small>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                                <i class="bi bi-download me-1"></i> Active Resource
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Past History Table -->
+                <div class="dashboard-card">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-clock-history text-muted me-2"></i>Past & Completed Sessions
+                    </h5>
+                    {% if past_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Offer</th>
+                                    <th>Therapist</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in past_bookings %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">{{ b.offer.name }}</td>
+                                    <td>{{ b.therapist.get_full_name|default:b.therapist.username|default:"-" }}</td>
+                                    <td>{{ b.start_time|date:"M j, Y"|default:b.created_at|date:"M j, Y" }}</td>
+                                    <td><span class="status-badge status-{{ b.status }}">{{ b.get_status_display }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-muted small mb-0">No past sessions recorded yet.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right Sidebar: Quick Stats & Support -->
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <h6 class="fw-bold text-dark mb-3">Your Wellness Profile</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-2 small">
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">Account Email:</span>
+                            <strong>{{ user.email }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">Total Sessions Booked:</span>
+                            <strong>{{ total_bookings }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">Student Verification:</span>
+                            {% if is_verified_student %}
+                                <strong class="text-success"><i class="bi bi-check-circle-fill"></i> Verified (.edu)</strong>
+                            {% else %}
+                                <strong class="text-warning">Not Verified</strong>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card bg-cream-light border-0">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-chat-heart text-teal me-1"></i> Need Support?</h6>
+                    <p class="small text-muted mb-3">Have questions about an upcoming session or need to adjust your package plan? Reach our care team anytime.</p>
+                    <a href="mailto:support@serenityhaven.com" class="btn btn-sm btn-outline-secondary w-100">Contact Care Coordinator</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
