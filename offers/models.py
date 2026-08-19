@@ -100,6 +100,14 @@ class Offer(models.Model):
             return None
         return f"₦{int(self.discounted_price):,}" if self.discounted_price == int(self.discounted_price) else f"₦{self.discounted_price:,.2f}"
 
+    def get_image_url(self):
+        if self.image:
+            try:
+                return self.image.url
+            except Exception:
+                return None
+        return None
+
     def get_features_list(self):
         if not self.features:
             return []
